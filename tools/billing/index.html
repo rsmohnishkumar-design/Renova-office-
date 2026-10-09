@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Billing App — RENOVA OFFICE</title>
+  <meta name="theme-color" content="#0f2a43">
+  <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="billing.css">
+  <script src="billing.js" defer></script>
+</head>
+<body>
+  <header class="topbar no-print">
+    <div class="wrap topbar-inner">
+      <!-- Tap the logo 5 times quickly to open the hidden admin room -->
+      <button class="logo" id="logo" type="button" aria-label="Store logo">
+        <span class="logo-mark" aria-hidden="true">R</span>
+        <span id="store-title" class="logo-name">My Store</span>
+      </button>
+      <a class="back" href="../../index.html">&larr; RENOVA OFFICE</a>
+    </div>
+  </header>
+
+  <!-- ================= BILLING ================= -->
+  <main class="wrap" id="billing-view">
+    <div class="layout">
+      <section class="panel no-print" aria-labelledby="add-h">
+        <h2 id="add-h">Add item</h2>
+        <form id="add-form" class="add-form" autocomplete="off">
+          <label>Item no.
+            <input id="add-no" inputmode="numeric" required autofocus>
+          </label>
+          <label>Qty
+            <input id="add-qty" type="number" min="1" step="1" value="1" required>
+          </label>
+          <button class="btn" type="submit">Add</button>
+        </form>
+        <p id="add-msg" class="msg" role="status" aria-live="polite"></p>
+
+        <h3>Items</h3>
+        <div id="item-grid" class="item-grid"></div>
+        <p id="no-items" class="muted" hidden>No items yet. The store admin can add items in the admin room.</p>
+      </section>
+
+      <section class="panel receipt" id="receipt" aria-labelledby="bill-h">
+        <div class="receipt-head">
+          <h2 id="bill-h"><span id="receipt-store">My Store</span></h2>
+          <p class="muted">Bill #<span id="bill-no">1</span> &middot; <span id="bill-date"></span></p>
+        </div>
+        <table class="bill">
+          <thead><tr><th>No.</th><th>Item</th><th class="num">Price</th><th class="num">Qty</th><th class="num">Amount</th><th class="no-print"><span class="sr">Remove</span></th></tr></thead>
+          <tbody id="bill-body"></tbody>
+        </table>
+        <p id="bill-empty" class="muted center">No items on this bill.</p>
+        <dl class="totals">
+          <div><dt>Subtotal</dt><dd id="t-sub">0.00</dd></div>
+          <div class="no-print"><dt><label for="discount">Discount</label></dt><dd><input id="discount" type="number" min="0" step="0.01" value="0"></dd></div>
+          <div class="print-only" id="t-disc-row"><dt>Discount</dt><dd id="t-disc">0.00</dd></div>
+          <div class="grand"><dt>Total</dt><dd id="t-total">0.00</dd></div>
+        </dl>
+        <p class="thanks print-only">Thank you! Visit again.</p>
+        <div class="actions no-print">
+          <button class="btn" id="btn-print" type="button">Print bill</button>
+          <button class="btn btn-ghost" id="btn-new" type="button">New bill</button>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <!-- ================= ADMIN (hidden) ================= -->
+  <main class="wrap" id="admin-view" hidden>
+    <div class="panel">
+      <div class="admin-bar">
+        <h2>Admin room</h2>
+        <button class="btn btn-ghost" id="admin-exit" type="button">Exit admin</button>
+      </div>
+
+      <h3>Store settings</h3>
+      <form id="settings-form" class="row-form">
+        <label>Store name <input id="set-store" required maxlength="60"></label>
+        <label>Currency symbol <input id="set-cur" required maxlength="4" size="4"></label>
+        <button class="btn" type="submit">Save</button>
+      </form>
+
+      <h3>Items</h3>
+      <form id="item-form" class="row-form" autocomplete="off">
+        <label>Item no. <input id="it-no" inputmode="numeric" required></label>
+        <label>Item name <input id="it-name" required maxlength="60"></label>
+        <label>Price <input id="it-price" type="number" min="0" step="0.01" required></label>
+        <button class="btn" type="submit" id="it-save">Add item</button>
+        <button class="btn btn-ghost" type="button" id="it-cancel" hidden>Cancel edit</button>
+      </form>
+      <p id="item-msg" class="msg" role="status" aria-live="polite"></p>
+      <table class="bill">
+        <thead><tr><th>No.</th><th>Item</th><th class="num">Price</th><th><span class="sr">Actions</span></th></tr></thead>
+        <tbody id="admin-body"></tbody>
+      </table>
+      <p id="admin-empty" class="muted center">No items yet.</p>
+
+      <h3>Backup &amp; security</h3>
+      <p class="muted">Data is saved only in this browser. Download a backup regularly.</p>
+      <div class="actions">
+        <button class="btn btn-ghost" id="btn-export" type="button">Download backup</button>
+        <label class="btn btn-ghost file-btn">Restore backup<input id="file-import" type="file" accept="application/json" hidden></label>
+        <button class="btn btn-ghost" id="btn-pin" type="button">Change PIN</button>
+      </div>
+      <p id="sec-msg" class="msg" role="status" aria-live="polite"></p>
+    </div>
+  </main>
+
+  <!-- PIN dialog -->
+  <dialog id="pin-dialog" class="no-print">
+    <form method="dialog" id="pin-form" autocomplete="off">
+      <h2 id="pin-title">Admin PIN</h2>
+      <p id="pin-help" class="muted"></p>
+      <input id="pin-input" type="password" inputmode="numeric" minlength="4" maxlength="12" placeholder="PIN" required>
+      <input id="pin-input2" type="password" inputmode="numeric" minlength="4" maxlength="12" placeholder="Repeat PIN" hidden>
+      <p id="pin-msg" class="msg" role="alert"></p>
+      <div class="actions">
+        <button class="btn" type="submit">OK</button>
+        <button class="btn btn-ghost" type="button" id="pin-cancel">Cancel</button>
+      </div>
+    </form>
+  </dialog>
+</body>
+</html>

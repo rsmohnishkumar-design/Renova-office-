@@ -139,6 +139,8 @@ ul { margin: 0; padding: 0; list-style: none; }
   padding: .25rem .7rem; border-radius: 999px; letter-spacing: .04em; text-transform: uppercase;
 }
 
+.badge-live { background: #dcf1f2; color: #0a4b52; }
+
 /* Contact */
 .section-dark { background: var(--navy); color: #fff; }
 .section-dark h2 { color: #fff; }
