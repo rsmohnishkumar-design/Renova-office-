@@ -7,28 +7,60 @@
   <meta name="theme-color" content="#0f2a43">
   <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="billing.css">
-  <script src="billing.js" defer></script>
+  <script type="module" src="billing.js"></script>
 </head>
 <body>
   <header class="topbar no-print">
     <div class="wrap topbar-inner">
-      <!-- Tap the logo 5 times quickly to open the hidden admin room -->
+      <!-- Owner only: tap the logo 5 times quickly to open the hidden admin room -->
       <button class="logo" id="logo" type="button" aria-label="Store logo">
         <span class="logo-mark" aria-hidden="true">R</span>
-        <span id="store-title" class="logo-name">My Store</span>
+        <span id="store-title" class="logo-name">Billing</span>
       </button>
-      <a class="back" href="../../index.html">&larr; RENOVA OFFICE</a>
+      <div class="top-right">
+        <button class="linkish" id="btn-signout" type="button" hidden>Sign out</button>
+        <a class="back" href="../../index.html">&larr; RENOVA OFFICE</a>
+      </div>
     </div>
   </header>
 
+  <!-- ================= LOADING ================= -->
+  <main class="wrap" id="loading-view">
+    <p class="muted center">Loading&hellip;</p>
+  </main>
+
+  <!-- ================= LOGIN ================= -->
+  <main class="wrap" id="login-view" hidden>
+    <div class="panel narrow">
+      <h2>Sign in</h2>
+      <p class="muted">Use the account the store owner created for you.</p>
+      <form id="login-form" class="stack">
+        <label>Email <input id="login-email" type="email" autocomplete="username" required></label>
+        <label>Password <input id="login-pass" type="password" autocomplete="current-password" required></label>
+        <button class="btn" type="submit" id="login-btn">Sign in</button>
+      </form>
+      <p id="login-msg" class="msg err" role="alert"></p>
+    </div>
+  </main>
+
+  <!-- ================= NO ACCESS ================= -->
+  <main class="wrap" id="noaccess-view" hidden>
+    <div class="panel narrow">
+      <h2>Account not added yet</h2>
+      <p id="noaccess-text" class="muted"></p>
+      <p class="muted">Send this ID to the store owner so they can add you:</p>
+      <p><code id="noaccess-uid"></code></p>
+    </div>
+  </main>
+
   <!-- ================= BILLING ================= -->
-  <main class="wrap" id="billing-view">
+  <main class="wrap" id="billing-view" hidden>
     <div class="layout">
       <section class="panel no-print" aria-labelledby="add-h">
         <h2 id="add-h">Add item</h2>
         <form id="add-form" class="add-form" autocomplete="off">
           <label>Item no.
-            <input id="add-no" inputmode="numeric" required autofocus>
+            <input id="add-no" inputmode="numeric" required>
           </label>
           <label>Qty
             <input id="add-qty" type="number" min="1" step="1" value="1" required>
@@ -39,13 +71,13 @@
 
         <h3>Items</h3>
         <div id="item-grid" class="item-grid"></div>
-        <p id="no-items" class="muted" hidden>No items yet. The store admin can add items in the admin room.</p>
+        <p id="no-items" class="muted" hidden>No items yet. The store owner can add items in the admin room.</p>
       </section>
 
       <section class="panel receipt" id="receipt" aria-labelledby="bill-h">
         <div class="receipt-head">
-          <h2 id="bill-h"><span id="receipt-store">My Store</span></h2>
-          <p class="muted">Bill #<span id="bill-no">1</span> &middot; <span id="bill-date"></span></p>
+          <h2 id="bill-h"><span id="receipt-store">Billing</span></h2>
+          <p class="muted">Bill #<span id="bill-no"></span> &middot; <span id="bill-date"></span></p>
         </div>
         <table class="bill">
           <thead><tr><th>No.</th><th>Item</th><th class="num">Price</th><th class="num">Qty</th><th class="num">Amount</th><th class="no-print"><span class="sr">Remove</span></th></tr></thead>
@@ -67,7 +99,7 @@
     </div>
   </main>
 
-  <!-- ================= ADMIN (hidden) ================= -->
+  <!-- ================= ADMIN (hidden, owner only) ================= -->
   <main class="wrap" id="admin-view" hidden>
     <div class="panel">
       <div class="admin-bar">
@@ -76,15 +108,22 @@
       </div>
 
       <h3>Store settings</h3>
-      <form id="settings-form" class="row-form">
-        <label>Store name <input id="set-store" required maxlength="60"></label>
-        <label>Currency symbol <input id="set-cur" required maxlength="4" size="4"></label>
-        <button class="btn" type="submit">Save</button>
+      <form id="settings-form" class="stack">
+        <div class="row-form">
+          <label>Store name <input id="set-store" required maxlength="60"></label>
+          <label>Currency symbol <input id="set-cur" required maxlength="4" size="4"></label>
+        </div>
+        <label>Staff account IDs (one per line)
+          <textarea id="set-staff" rows="3" placeholder="Paste each cashier's User UID on its own line"></textarea>
+        </label>
+        <p class="muted">Staff can bill and view items. Only you can change items or settings. Find a user's UID in Firebase Console &rarr; Authentication &rarr; Users.</p>
+        <div><button class="btn" type="submit">Save settings</button></div>
       </form>
+      <p id="set-msg" class="msg" role="status" aria-live="polite"></p>
 
       <h3>Items</h3>
       <form id="item-form" class="row-form" autocomplete="off">
-        <label>Item no. <input id="it-no" inputmode="numeric" required></label>
+        <label>Item no. <input id="it-no" required maxlength="20" pattern="[A-Za-z0-9_\-]+" title="Letters, numbers, - and _ only"></label>
         <label>Item name <input id="it-name" required maxlength="60"></label>
         <label>Price <input id="it-price" type="number" min="0" step="0.01" required></label>
         <button class="btn" type="submit" id="it-save">Add item</button>
@@ -97,30 +136,14 @@
       </table>
       <p id="admin-empty" class="muted center">No items yet.</p>
 
-      <h3>Backup &amp; security</h3>
-      <p class="muted">Data is saved only in this browser. Download a backup regularly.</p>
+      <h3>Backup</h3>
+      <p class="muted">Items are stored online and shared by all signed-in devices. You can still download a copy.</p>
       <div class="actions">
         <button class="btn btn-ghost" id="btn-export" type="button">Download backup</button>
         <label class="btn btn-ghost file-btn">Restore backup<input id="file-import" type="file" accept="application/json" hidden></label>
-        <button class="btn btn-ghost" id="btn-pin" type="button">Change PIN</button>
       </div>
       <p id="sec-msg" class="msg" role="status" aria-live="polite"></p>
     </div>
   </main>
-
-  <!-- PIN dialog -->
-  <dialog id="pin-dialog" class="no-print">
-    <form method="dialog" id="pin-form" autocomplete="off">
-      <h2 id="pin-title">Admin PIN</h2>
-      <p id="pin-help" class="muted"></p>
-      <input id="pin-input" type="password" inputmode="numeric" minlength="4" maxlength="12" placeholder="PIN" required>
-      <input id="pin-input2" type="password" inputmode="numeric" minlength="4" maxlength="12" placeholder="Repeat PIN" hidden>
-      <p id="pin-msg" class="msg" role="alert"></p>
-      <div class="actions">
-        <button class="btn" type="submit">OK</button>
-        <button class="btn btn-ghost" type="button" id="pin-cancel">Cancel</button>
-      </div>
-    </form>
-  </dialog>
 </body>
 </html>

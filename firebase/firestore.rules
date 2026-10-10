@@ -1,0 +1,54 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Each store is a document: /stores/{storeId}
+    // Fields: name (string), currency (string), ownerUid (string), staff (list of uids)
+    // The store document is created by hand in the Firebase console (no client can create it),
+    // so strangers who sign up with the public API key cannot become owners or members.
+
+    function storeData(id) {
+      return get(/databases/$(database)/documents/stores/$(id)).data;
+    }
+    function isOwner(id) {
+      return request.auth != null && request.auth.uid == storeData(id).ownerUid;
+    }
+    function isMember(id) {
+      return request.auth != null
+        && (request.auth.uid == storeData(id).ownerUid
+            || request.auth.uid in storeData(id).get('staff', []));
+    }
+
+    match /stores/{storeId} {
+      allow read: if isMember(storeId);
+      // Owner may change name, currency and staff, but never hand over ownership.
+      allow update: if isOwner(storeId)
+        && request.resource.data.ownerUid == resource.data.ownerUid;
+      allow create, delete: if false;
+
+      // Items: document id = item number
+      match /items/{itemNo} {
+        function validItem() {
+          let d = request.resource.data;
+          return d.keys().hasOnly(['no', 'name', 'price'])
+            && d.no is string && d.no == itemNo && d.no.size() > 0 && d.no.size() <= 20
+            && d.name is string && d.name.size() > 0 && d.name.size() <= 60
+            && d.price is number && d.price >= 0;
+        }
+        allow read: if isMember(storeId);
+        allow create, update: if isOwner(storeId) && validItem();
+        allow delete: if isOwner(storeId);
+      }
+
+      // Bills: staff can create, only the owner can read. Never edited or deleted.
+      match /bills/{billId} {
+        allow create: if isMember(storeId)
+          && request.resource.data.createdBy == request.auth.uid
+          && request.resource.data.keys().hasOnly(
+               ['number', 'lines', 'subtotal', 'discount', 'total', 'createdAt', 'createdBy']);
+        allow read: if isOwner(storeId);
+        allow update, delete: if false;
+      }
+    }
+  }
+}
