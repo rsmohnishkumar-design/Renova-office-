@@ -9,7 +9,7 @@ import {
   initializeFirestore, persistentLocalCache, persistentMultipleTabManager,
   doc, collection, onSnapshot, setDoc, updateDoc, deleteDoc, addDoc, writeBatch, serverTimestamp
 } from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js';
-import { firebaseConfig, STORE_ID } from './firebase-config.js?v=3';
+import { firebaseConfig, STORE_ID } from './firebase-config.js?v=4';
 
 const $ = (id) => document.getElementById(id);
 const app = initializeApp(firebaseConfig);
