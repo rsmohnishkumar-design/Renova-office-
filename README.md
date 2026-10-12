@@ -11,7 +11,7 @@ Built with plain HTML, CSS and vanilla JavaScript. There is no build step, backe
 **Phase 1: company website.** Home, About, Services, Products and Contact sections.
 
 - All products are marked *Coming Soon*. None is built yet.
-- The contact section shows a **placeholder email** (`hello@example.com`). There is no contact form.
+- The contact section shows the support email (renovaoffice.support@gmail.com). There is no contact form.
 
 ## Structure
 
@@ -44,7 +44,7 @@ A custom domain can be added later under the same Pages settings.
 
 ## Things to update
 
-- [ ] Replace the placeholder email in `index.html` (search for `hello@example.com`).
+- [x] Support email set in `index.html` and the Billing App footer.
 - [ ] Replace the text logo with a real one, if desired (`.brand` in `index.html`, `assets/`).
 - [ ] Change colours in `:root` in `style.css`.
 
