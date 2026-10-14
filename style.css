@@ -159,6 +159,9 @@ ul { margin: 0; padding: 0; list-style: none; }
 .contact-email { font-family: var(--font-serif); font-size: clamp(1.15rem, 3vw, 1.5rem); color: #fff; word-break: break-all; text-underline-offset: 5px; }
 .contact-email:hover { color: #d8c39a; }
 .note { font-size: .92rem; color: #c3d0de; margin: 1rem 0 0; }
+.contact-action { margin: 1.4rem 0 0; }
+.btn-light { background: #fff; border-color: #fff; color: var(--navy) !important; }
+.btn-light:hover { background: #e9eef4; border-color: #e9eef4; }
 
 /* Footer */
 .site-footer { background: #0b1828; color: #b9c6d4; padding-top: 3rem; }
@@ -173,8 +176,15 @@ ul { margin: 0; padding: 0; list-style: none; }
 .footer-bottom p { margin: 0; }
 
 /* Gentle fade-in on scroll (opacity only; only when JS is running) */
-.js .reveal { opacity: 0; transition: opacity .6s ease; }
-.js .reveal.visible { opacity: 1; }
+.js .reveal { opacity: 0; transform: translateY(26px) scale(.985); transition: opacity .7s ease, transform .7s cubic-bezier(.2, .7, .2, 1); }
+.js .reveal.visible { opacity: 1; transform: none; }
+.js .grid-3 > .reveal:nth-child(2), .js .values > .reveal:nth-child(2) { transition-delay: .09s; }
+.js .grid-3 > .reveal:nth-child(3), .js .values > .reveal:nth-child(3) { transition-delay: .18s; }
+.js .grid-3 > .reveal:nth-child(4), .js .values > .reveal:nth-child(4) { transition-delay: .27s; }
+
+/* Replayed when a menu item or button jumps to a section */
+@keyframes popIn { from { opacity: 0; transform: translateY(22px) scale(.97); } to { opacity: 1; transform: none; } }
+.js .reveal.pop-in { animation: popIn .6s cubic-bezier(.2, .7, .2, 1) both; transition-delay: 0s; }
 
 /* Tablet */
 @media (max-width: 960px) {
@@ -210,5 +220,5 @@ ul { margin: 0; padding: 0; list-style: none; }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   *, *::before, *::after { transition: none !important; animation: none !important; }
-  .js .reveal { opacity: 1; }
+  .js .reveal { opacity: 1; transform: none; }
 }
