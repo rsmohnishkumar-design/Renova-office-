@@ -85,8 +85,10 @@ dialog input { width: 100%; margin: .4rem 0; font-size: 1.2rem; letter-spacing: 
   .logo-name { max-width: 50vw; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 }
 
+/* margin: 0 removes the browser's own print header/footer (page URL, date, title) */
+@page { margin: 0; }
 @media print {
-  body { background: #fff; }
+  body { background: #fff; padding: 12mm; }
   .no-print { display: none !important; }
   .print-only { display: block; }
   .layout { display: block; padding: 0; }
