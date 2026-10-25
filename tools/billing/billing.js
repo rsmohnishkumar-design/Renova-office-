@@ -1,4 +1,4 @@
-// RENOVA OFFICE — Billing App (Firebase edition)
+// NOVA OFFICE — Billing App (Firebase edition)
 // Auth: Firebase Authentication (email + password). Data: Cloud Firestore.
 // Access control is enforced by firebase/firestore.rules, not by this file.
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js';

@@ -1,8 +1,8 @@
-# RENOVA OFFICE
+# NOVA OFFICE
 
 **Renewing the Way You Work.**
 
-Company website for RENOVA OFFICE, which builds practical, affordable digital tools and websites for small businesses.
+Company website for NOVA OFFICE, which builds practical, affordable digital tools and websites for small businesses.
 
 Built with plain HTML, CSS and vanilla JavaScript. There is no build step, backend, database or paid service.
 

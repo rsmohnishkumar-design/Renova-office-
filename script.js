@@ -1,4 +1,4 @@
-// RENOVA OFFICE — site behaviour (vanilla JS, no dependencies)
+// NOVA OFFICE — site behaviour (vanilla JS, no dependencies)
 (function () {
   'use strict';
 

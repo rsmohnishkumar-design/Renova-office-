@@ -1,6 +1,6 @@
 # Tools
 
-Reserved for future RENOVA OFFICE tools (document generators, business tools, productivity apps).
+Reserved for future NOVA OFFICE tools (document generators, business tools, productivity apps).
 
 Convention for each tool:
 
